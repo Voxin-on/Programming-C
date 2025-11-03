@@ -1,0 +1,70 @@
+# Visual Studio Code
+.vscode/
+*.code-workspace
+
+# Visual Studio
+.vs/
+**/*.vcxproj
+**/*.vcxproj.filters
+**/*.vcxproj.user
+**/*.sln
+**/*.sdf
+**/*.opensdf
+**/*.db
+**/*.suo
+**/*.ipch
+**/ipch/
+
+# C++ compiled files
+*.exe
+*.out
+*.app
+*.o
+*.obj
+*.dll
+*.so
+*.a
+*.lib
+*.exp
+*.pdb
+*.ilk
+*.idb
+*.pch
+
+# Build directories
+build/
+Debug/
+Release/
+x64/
+x86/
+out/
+bin/
+obj/
+
+# CMake
+CMakeFiles/
+cmake_install.cmake
+CMakeCache.txt
+*.cmake
+Makefile
+
+# System
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temporary files
+*.tmp
+*.temp
+*~
+*.swp
+*.swo
+
+# Logs
+*.log
+*.tlog
+
+# Precompiled Headers
+*.gch
+*.pch
+"/git/" 
