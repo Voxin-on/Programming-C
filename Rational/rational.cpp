@@ -43,11 +43,16 @@ Rational::Rational(int n, int d)
 {
     numer=n;
     denom=d;
+    simplify();
 }
 
 Rational::Rational(double number){
-    denom = 1000000;
-    numer = number * denom + (number >= 0 ? 0.5 : -0.5);
+    int exp;
+    double mantissa = frexp(number, &exp);
+
+    numer = llround(mantissa * (1LL << 25));
+    denom = (1LL << (25-exp));
+
     simplify();
 }
 
@@ -152,7 +157,7 @@ bool Rational::operator !=(const Rational& r) const
 
 bool Rational::operator<(const Rational& r) const 
 {
-    return numer * r.denom < r.numer * denom;
+    return (long long)numer * r.denom < (long long)r.numer * denom;
 }
 
 bool Rational::operator<=(const Rational& r) const 
@@ -226,25 +231,11 @@ void solveQuadratic(const Rational& a, const Rational& b, const Rational& c)
         return;
     }
 
-    int sq_num = (int)round(sqrt((double)d.numer));
-    int sq_den = (int)round(sqrt((double)d.denom));
+    Rational sqrt_d(sqrt((double)d));
 
-    if (sq_num * sq_num == d.numer && sq_den * sq_den == d.denom){
-        Rational sqrt_d(sq_num, sq_den);
+    Rational x1 = (neg_b + sqrt_d) / two_a;
+    Rational x2 = (neg_b - sqrt_d) / two_a;
 
-        Rational x1 = (neg_b + sqrt_d) / two_a;
-        Rational x2 = (neg_b - sqrt_d) / two_a;
-
-        cout << "x1 = " << x1 << endl;
-        cout << "x2 = " << x2 << endl;
-    }
-    else {
-        double sqrtD = sqrt((double)d);
-
-        double x1 = (double(neg_b) + sqrtD) / double(two_a);
-        double x2 = (double(neg_b) - sqrtD) / double(two_a);
-
-        cout << "x1 = " << x1 << endl;
-        cout << "x2 = " << x2 << endl;
-    }
+    cout << "x1 = " << x1 << endl;
+    cout << "x2 = " << x2 << endl;
 }
