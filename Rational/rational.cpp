@@ -201,7 +201,7 @@ ostream& operator <<(ostream& out, const Rational& r)
 
 
 
-void solveQuadratic(const Rational& a, const Rational& b, const Rational& c)
+void Rational::solveQuadratic(const Rational& a, const Rational& b, const Rational& c)
 {
     if (a == Rational(0)) {
         if (b == Rational(0)) {

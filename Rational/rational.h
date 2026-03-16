@@ -50,8 +50,8 @@ class Rational
 
         friend istream& operator >>(istream& in, Rational& r);
         friend ostream& operator <<(ostream& out, const Rational& r);
-};
 
-void solveQuadratic(const Rational& a, const Rational& b, const Rational& c);
+        void solveQuadratic(const Rational& a, const Rational& b, const Rational& c);
+};
 
 #endif
