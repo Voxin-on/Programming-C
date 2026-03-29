@@ -1,0 +1,146 @@
+#ifndef LINELIST_H
+#define LINELIST_H
+
+#include <iostream>
+using namespace std;
+
+class LineListException {};
+
+template <class T> class LineList;
+
+template <class T> class LineListElem {
+    T data;
+    LineListElem* next;
+public:
+    LineListElem(const T& adata, LineListElem* anext);
+    const T& getData() const;
+    LineListElem* getNext();
+    friend class LineList<T>;
+};
+
+template <class T> class LineList {
+    LineListElem<T>* start;
+public:
+    LineList();
+    ~LineList();
+
+    LineListElem<T>* getStart();
+    void deleteFirst();
+    void deleteAfter(LineListElem<T>* ptr);
+    void insertFirst(const T& data);
+    void insertAfter(LineListElem<T>* ptr, const T& data);
+
+    template <class U>
+    friend ostream& operator << (ostream& out, LineList<U>& list);
+};
+
+
+
+template <class T>
+LineListElem<T>::LineListElem(const T& adata, LineListElem<T>* anext) {
+    data = adata;
+    next = anext;
+}
+
+template <class T>
+const T& LineListElem<T>::getData() const {
+    return data;
+}
+
+template <class T>
+LineListElem<T>* LineListElem<T>::getNext() {
+    return next;
+}
+
+
+
+template <class T>
+LineList<T>::LineList() : start(0) {}
+
+template <class T>
+LineList<T>::~LineList() {
+    while (start) {
+        deleteFirst();
+    }
+}
+
+template <class T>
+LineListElem<T>* LineList<T>::getStart() {
+    return start;
+}
+
+template <class T>
+void LineList<T>::insertFirst(const T& data) {
+    if (!start) {
+        start = new LineListElem<T>(data, 0);
+        start->next = start;
+    } else {
+        LineListElem<T>* tail = start;
+        while (tail->next != start) tail = tail->next;
+
+        start = new LineListElem<T>(data, start);
+        tail->next = start;
+    }
+}
+
+template <class T>
+void LineList<T>::deleteFirst() {
+    if (!start) throw LineListException();
+
+    if (start->next == start) {
+        delete start;
+        start = 0;
+    } else {
+        LineListElem<T>* tail = start;
+        while (tail->next != start) tail = tail->next;
+
+        LineListElem<T>* temp = start;
+        start = start->next;
+        tail->next = start;
+        delete temp;
+    }
+}
+
+template <class T>
+void LineList<T>::insertAfter(LineListElem<T>* ptr, const T& data) {
+    if (!ptr) throw LineListException();
+    ptr->next = new LineListElem<T>(data, ptr->next);
+}
+
+template <class T>
+void LineList<T>::deleteAfter(LineListElem<T>* ptr) {
+    if (!ptr || !start) throw LineListException();
+
+    LineListElem<T>* temp = ptr->next;
+    
+    if (temp == start) {
+        if (start->next == start) start = 0;
+        else start = start->next;
+    }
+
+    if (temp == ptr) {
+        start = 0;
+    } else {
+        ptr->next = temp->next;
+    }
+    delete temp;
+}
+
+
+
+template <class T>
+ostream& operator << (ostream& out, LineList<T>& list) {
+    LineListElem<T>* ptr = list.start;
+    if (!ptr) {
+        out << "EMPTY";
+    } else {
+        LineListElem<T>* first = ptr;
+        do {
+            out << ptr->getData() << " ";
+            ptr = ptr->getNext();
+        } while (ptr != first);
+    }
+    return out;
+}
+
+#endif

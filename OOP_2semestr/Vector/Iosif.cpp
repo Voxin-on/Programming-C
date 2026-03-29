@@ -14,11 +14,11 @@ int main(){
 
         Array arr(N);
 
-        clock_t start = clock();
-
         for (int j=0;j<N;j++){
             arr.insert(j);
         }
+
+        clock_t start = clock();
 
         int ind=0;
         while(arr.getSize()>1){
