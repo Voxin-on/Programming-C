@@ -40,8 +40,9 @@ double DateTime::dateToDouble(int y, int m, int d, int h, int min, int sec){
     return jd_day + jd_time;
 }
 
-DateTime::DateTime(int y,int m,int d,int h, int min,int sec){
+DateTime::DateTime(int y,int m,int d,int h, int min,int sec, DateTimeFormat f){
     data=dateToDouble(y, m, d, h, min, sec);
+    fmt=f;
 }
 
 istream& operator>>(istream& is, DateTime& dt) {
@@ -54,11 +55,14 @@ istream& operator>>(istream& is, DateTime& dt) {
 
     if (s1 == ':') {
         h = v1; min = v2; sec = v3;
+        dt.setFormat(TIME_ONLY);
     } else if (s1 == '-') {
         y = v1; m = v2; d = v3;
+        dt.setFormat(DATE_ONLY);
         if (is.peek() == 'T') {
             char t, s4, s5;
             is >> t >> h >> s4 >> min >> s5 >> sec;
+            dt.setFormat(FULL);
         }
     } else {
         throw DateTimeException();
@@ -93,12 +97,24 @@ ostream& operator<<(ostream& os, const DateTime& dt) {
     int min   = (int)(f * 1440) % 60;
     int sec   = (int)(f * 86400) % 60;
 
-    os << year << "-"
-       << (month < 10 ? "0" : "") << month << "-"
-       << (day   < 10 ? "0" : "") << day   << "T"
-       << (h     < 10 ? "0" : "") << h     << ":"
-       << (min   < 10 ? "0" : "") << min   << ":"
-       << (sec   < 10 ? "0" : "") << sec   << "\n";
+    if (dt.fmt == DATE_ONLY) {
+        os << year << "-"
+           << (month < 10 ? "0" : "") << month << "-"
+           << (day   < 10 ? "0" : "") << day << "\n";
+    } 
+    else if (dt.fmt == TIME_ONLY) {
+        os << (h   < 10 ? "0" : "") << h   << ":"
+           << (min < 10 ? "0" : "") << min << ":"
+           << (sec < 10 ? "0" : "") << sec << "\n";
+    } 
+    else {
+        os << year << "-"
+           << (month < 10 ? "0" : "") << month << "-"
+           << (day   < 10 ? "0" : "") << day   << "T"
+           << (h     < 10 ? "0" : "") << h     << ":"
+           << (min   < 10 ? "0" : "") << min   << ":"
+           << (sec   < 10 ? "0" : "") << sec   << "\n";
+    }
     return os;
 }
 
