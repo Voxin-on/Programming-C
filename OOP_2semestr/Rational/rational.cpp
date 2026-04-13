@@ -1,6 +1,7 @@
 #include "rational.h"
 #include <iostream>
 #include <cmath>
+#include <climits>
 
 
 void Rational::simplify()
@@ -51,7 +52,7 @@ Rational::Rational(double number){
     double mantissa = frexp(number, &exp);
 
     numer = llround(mantissa * (1LL << 25));
-    denom = (1LL << (25-exp));
+    denom = 1LL << 25-exp;
 
     simplify();
 }
@@ -60,8 +61,14 @@ Rational::Rational(double number){
 
 Rational& Rational::operator +=(const Rational& r)
 {
-    numer = (numer*r.denom+denom*r.numer);
-    denom *= r.denom;
+    long long new_numer = (long long)numer*r.denom+(long long)denom*r.numer;
+    long long new_denom = (long long)denom * r.denom;
+
+    if (new_numer > INT_MAX || new_numer < INT_MIN || new_denom > INT_MAX) {
+        throw RationalException();
+    }
+    numer = (int)new_numer;
+    denom = (int)new_denom;
     simplify();
     return *this;
 }
@@ -74,7 +81,7 @@ Rational Rational::operator +(const Rational &r) const
 
 Rational& Rational::operator -=(const Rational& r)
 {
-    return (*this += (-r));
+    return *this += (-r);
 }
 
 Rational Rational::operator -(const Rational& r) const
@@ -85,8 +92,15 @@ Rational Rational::operator -(const Rational& r) const
 
 Rational& Rational::operator *=(const Rational& r)
 {
-    numer *=r.numer;
-    denom *= r.denom;
+    long long new_numer = (long long)numer * r.numer;
+    long long new_denom = (long long)denom * r.denom;
+
+    if (new_numer > INT_MAX || new_numer < INT_MIN || new_denom > INT_MAX) {
+        throw RationalException();
+    }
+
+    numer = (int)new_numer;
+    denom = (int)new_denom;
     simplify();
     return *this;
 }
@@ -147,7 +161,7 @@ Rational Rational::operator -() const
 
 bool Rational::operator ==(const Rational& r) const
 {
-    return (numer==r.numer) && (denom==r.denom);
+    return numer==r.numer && denom==r.denom;
 }
 
 bool Rational::operator !=(const Rational& r) const
@@ -183,7 +197,7 @@ Rational::operator int() const
 }
 Rational::operator double() const
 {
-    return ((double)numer)/denom;
+    return (double)numer/denom;
 }
 
 
@@ -201,25 +215,20 @@ ostream& operator <<(ostream& out, const Rational& r)
 
 
 
-void Rational::solveQuadratic(const Rational& a, const Rational& b, const Rational& c)
-{
+void solveQuadratic(const Rational& a, const Rational& b, const Rational& c) {
     if (a == Rational(0)) {
         if (b == Rational(0)) {
-            if (c == Rational(0))
-                cout << "Бесконечно много решений" << endl;
-            else
-                cout << "Нет решений" << endl;
-        }
-        else {
-            Rational x = -c / b;
-            cout << "Линейное уравнение, x = " << x << endl;
+            cout << (c == Rational(0) ? "Бесконечно много решений" : "Нет решений") << endl;
+        } else {
+            cout << "Линейное уравнение, x = " << -c / b << endl;
         }
         return;
     }
-    Rational d = b*b - Rational(4)*a*c;
+
+    Rational d = b * b - Rational(4) * a * c;
 
     if (d < Rational(0)) {
-        cout << "Нет корней"<<endl;
+        cout << "Нет корней" << endl;
         return;
     }
 
@@ -228,14 +237,9 @@ void Rational::solveQuadratic(const Rational& a, const Rational& b, const Ration
 
     if (d == Rational(0)) {
         cout << "x = " << neg_b / two_a << endl;
-        return;
+    } else {
+        Rational sqrt_d(sqrt((double)d));
+        cout << "x1 = " << (neg_b + sqrt_d) / two_a << endl;
+        cout << "x2 = " << (neg_b - sqrt_d) / two_a << endl;
     }
-
-    Rational sqrt_d(sqrt((double)d));
-
-    Rational x1 = (neg_b + sqrt_d) / two_a;
-    Rational x2 = (neg_b - sqrt_d) / two_a;
-
-    cout << "x1 = " << x1 << endl;
-    cout << "x2 = " << x2 << endl;
 }

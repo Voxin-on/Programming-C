@@ -58,16 +58,25 @@ int main(){
     cout<<"Quadratics"<<endl;
 
     Rational t1(0);
+    try{
+        solveQuadratic(t1, Rational(0), Rational(0)); // все 0 бесконечно много
+        solveQuadratic(t1, Rational(0), Rational(1)); // 1!=0 нету решений
+        solveQuadratic(t1, Rational(1), Rational(1)); // линейное -1
 
-    t1.solveQuadratic(t1, Rational(0), Rational(0));
-    t1.solveQuadratic(t1, Rational(0), Rational(1));
-    t1.solveQuadratic(t1, Rational(1), Rational(1));
+        Rational t2(1);
+        solveQuadratic(t2, Rational(0), Rational(1)); // d<0 нету корней 
+        solveQuadratic(t2, Rational(-4), Rational(4)); // 16-16 d=0 x = 2  
+        solveQuadratic(t2, Rational(-5), Rational(6)); // d=1 x=3 x=2
+        solveQuadratic(t2, Rational(0), Rational(-2)); // d=8 x=корень(2) x=-корень(2)
 
-    Rational t2(1);
-    t2.solveQuadratic(t2, Rational(0), Rational(1));
-    t2.solveQuadratic(t2, Rational(-4), Rational(4));
-    t2.solveQuadratic(t2, Rational(-5), Rational(6));
-    t2.solveQuadratic(t2, Rational(0), Rational(-2));
-
+        cout<<"Exception(limit)"<<endl;
+        Rational l1(0x7FFFFFFF);
+        Rational l2(0x7FFFFFFF);
+        l1+=l2;
+    }
+    catch(const RationalException& e){
+        cout<<"Limit exception"<<endl;
+    }
+    
     return 0;
 }
