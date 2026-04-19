@@ -1,4 +1,5 @@
 #include "graph.h"
+#include "algorithms.h"
 #include <iostream>
 using namespace std;
  
@@ -33,6 +34,32 @@ int main() {
     g.addEdge(d, e);
  
     printGraph(g);
+
+    DFS test(g);
+
+    Node* nodeA = nullptr;
+    Node* nodeB = nullptr;
+
+    for (node_iterator it = g.begin(); it != g.end(); ++it) {
+        if ((*it)->getName() == "A")  nodeA = *it;
+        if ((*it)->getName() == "E") nodeB = *it;
+    }
+
+    if(test.connected(nodeA,nodeB)) //must be Yes
+        cout<<"Yes"<<endl;
+    else
+        cout<<"No"<<endl;
+
+    Node* isolated = new Node("Z");
+    g.addNode(isolated);
+
+    for (node_iterator it = g.begin(); it != g.end(); ++it)
+        if ((*it)->getName() == "Z") nodeB = *it;
+
+    if (test.connected(nodeA, isolated)) // must be No
+        cout << "Yes" << endl;
+    else
+        cout << "No" << endl;
  
     return 0;
 }

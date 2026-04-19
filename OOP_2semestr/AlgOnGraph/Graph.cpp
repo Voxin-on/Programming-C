@@ -1,13 +1,35 @@
 #include "graph.h"
-#include <iostream>
-#include <queue>
+#include <fstream>
 
-void Node::addNeighbour(Node* neighbour) {
-    neighbours.insert(neighbour);
-}
+Graph::Graph(const char* file_name){
+    std::ifstream file(file_name);
+    file.ignore(1000, '\n');
+    int source,target;
 
-void Node::removeNeighbour(Node* neighbour) {
-    neighbours.erase(neighbour);
+    while(file>>source>>target){
+        Node* srcNode = nullptr;
+        Node* tgtNode = nullptr;
+
+        for (node_iterator it = nodes.begin(); it != nodes.end(); ++it) {
+            if ((*it)->getName() == std::to_string(source)) 
+                srcNode = *it;
+            if ((*it)->getName() == std::to_string(target)) 
+                tgtNode = *it;
+        }
+
+        if (!srcNode) { 
+            srcNode = new Node(std::to_string(source)); 
+            addNode(srcNode); 
+        }
+        if (!tgtNode) { 
+            tgtNode = new Node(std::to_string(target)); 
+            addNode(tgtNode); 
+        }
+
+        addEdge(srcNode, tgtNode);
+    }
+
+    file.close();
 }
 
 void Graph::addNode(Node* node) {
@@ -39,35 +61,4 @@ void Graph::removeEdge(Node* begin, Node* end) {
         return;
     begin->removeNeighbour(end);
     end->removeNeighbour(begin);
-}
-
-
-bool BFS::connected(Node* begin, Node* end) {
-    std::queue<Node*> nodes; nodes.push(begin);
-    std::set<Node*> visited;
-    while (!nodes.empty()) {
-        Node* next = nodes.front(); nodes.pop();
-        if (end == next) return true;
-        visited.insert(next);
-        for (node_iterator it = next->nb_begin();
-            it != next->nb_end(); it++)
-            if (visited.find(*it) == visited.end())
-                nodes.push(*it);
-    }
-    return false;
-}
-
-bool DFS::connected(Node* begin, Node* end) {
-    visited.clear(); return connected(begin, end, 0);
-}
-    bool DFS::connected(Node* begin, Node* end, int depth) {
-    if (begin == end) return true;
-    visited.insert(begin);
-    for (node_iterator it = begin->nb_begin();
-        it != begin->nb_end(); it++) {
-        if (visited.find(*it) == visited.end()) {
-            if (connected(*it, end, depth + 1)) return true;
-        }
-    }
-    return false;
 }
