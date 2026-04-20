@@ -32,6 +32,13 @@ Graph::Graph(const char* file_name){
     file.close();
 }
 
+Graph::~Graph() {
+    for (Node* node : nodes) {
+        delete node;
+    }
+    nodes.clear();
+}
+
 void Graph::addNode(Node* node) {
     nodes.insert(node);
 }

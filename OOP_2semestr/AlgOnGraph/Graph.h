@@ -10,6 +10,7 @@ class Graph {
 public:
     Graph () {};
     Graph(const char* file_name);
+    ~Graph();
     void addNode(Node* node);
     void removeNode(Node* node);
     void addEdge(Node* begin, Node* end);
