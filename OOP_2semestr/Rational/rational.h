@@ -56,6 +56,4 @@ class Rational
 
 };
 
-void solveQuadratic(const Rational& a, const Rational& b, const Rational& c);
-
 #endif

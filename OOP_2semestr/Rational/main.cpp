@@ -1,8 +1,38 @@
 #include <iostream>
 #include "rational.h"
 #include <locale.h>
+#include <cmath>
 
 using namespace std;
+
+void solveQuadratic(const Rational& a, const Rational& b, const Rational& c) {
+    if (a == Rational(0)) {
+        if (b == Rational(0)) {
+            cout << (c == Rational(0) ? "Бесконечно много решений" : "Нет решений") << endl;
+        } else {
+            cout << "Линейное уравнение, x = " << -c / b << endl;
+        }
+        return;
+    }
+
+    Rational d = b * b - Rational(4) * a * c;
+
+    if (d < Rational(0)) {
+        cout << "Нет корней" << endl;
+        return;
+    }
+
+    Rational neg_b = -b;
+    Rational two_a = Rational(2) * a;
+
+    if (d == Rational(0)) {
+        cout << "x = " << neg_b / two_a << endl;
+    } else {
+        Rational sqrt_d(sqrt((double)d));
+        cout << "x1 = " << (neg_b + sqrt_d) / two_a << endl;
+        cout << "x2 = " << (neg_b - sqrt_d) / two_a << endl;
+    }
+}
 
 int main(){
     setlocale(LC_ALL, "Russian");
