@@ -42,7 +42,7 @@ public:
         file.close();
     }
 
-    ~Polygon() {
+    ~Polygon() override {
         delete[] vertices;
     }
 

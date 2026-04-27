@@ -7,6 +7,8 @@
 #include "ellipse.h"
 #include <iostream>
 
+#include <vector>
+
 using namespace std;
 
 int main () {
@@ -37,7 +39,20 @@ int main () {
     cout<<p.calc_perimetr() << endl;
 
 
+    cout<<"Test with base class"<<endl;
+    vector<IFigure *> figures;
 
+    figures.push_back(new Triangle<int>(3, 4, 5));
+    figures.push_back(new Rectangle<int>(3, 4));
+    figures.push_back(new Circle<int>({0,0}, 1));
+    figures.push_back(new Ellipse<int>({0,0}, 1, 1));
+    figures.push_back(new Polygon<int>(pts, 3));
+
+    for (IFigure* fig : figures){ 
+        fig->name();
+        cout << "Area: " << fig->calc_area() << endl;
+        cout << "Perimeter: " << fig->calc_perimetr() << endl << endl;
+    }
 
     return 0;
 }

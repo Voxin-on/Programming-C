@@ -117,6 +117,8 @@ int main() {
     // 4 и 5 выделение непересекающих граф и распределние по файлам
 
     testSearchDisjointGraphs();
+
+
  
     return 0;
 }

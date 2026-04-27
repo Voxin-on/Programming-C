@@ -7,11 +7,17 @@
 #include "ellipse.h"
 #include <iostream>
 
-int main(){
+using namespace std;
+
+int findFigures(){
     int countRect = 0, countCircle = 0, countTri = 0, countNoise = 0;
 
     
 
+    // Посчитайте площадь участка определенного в granitsy-uchastka2.txt.
+
+    Polygon<int> p("granitsy-uchastka2.txt");
+    cout << "Polygon area in file: " << p.calc_area() << endl;
 
     return 0;
 }
