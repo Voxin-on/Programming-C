@@ -1,5 +1,6 @@
 #include "graph.h"
 #include <fstream>
+#include <map>
 
 Graph::Graph(const char* file_name){
     std::ifstream file(file_name);
@@ -32,11 +33,56 @@ Graph::Graph(const char* file_name){
     file.close();
 }
 
-Graph::~Graph() {
-    for (Node* node : nodes) {
-        delete node;
+Graph::Graph(const Graph& other) {
+    std::map<Node*, Node*> nodeMap;
+
+    // копируем вершины
+    for (Node* node : other.nodes) {
+        Node* newNode = new Node(node->getName());
+        nodes.insert(newNode);
+        nodeMap[node] = newNode;
     }
+
+    // копируем рёбра
+    for (Node* node : other.nodes) {
+        for (auto it = node->nb_begin(); it != node->nb_end(); ++it) {
+            if (nodeMap.count(*it)) {
+                nodeMap[node]->addNeighbour(nodeMap[*it]);
+            }
+        }
+    }
+}
+
+Graph& Graph::operator=(const Graph& other) {
+    if (this == &other) return *this;
+
+    // очистка
+    for (Node* node : nodes)
+        delete node;
     nodes.clear();
+
+    std::map<Node*, Node*> nodeMap;
+
+    for (Node* node : other.nodes) {
+        Node* newNode = new Node(node->getName());
+        nodes.insert(newNode);
+        nodeMap[node] = newNode;
+    }
+
+    for (Node* node : other.nodes) {
+        for (auto it = node->nb_begin(); it != node->nb_end(); ++it) {
+            if (nodeMap.count(*it)) {
+                nodeMap[node]->addNeighbour(nodeMap[*it]);
+            }
+        }
+    }
+
+    return *this;
+}
+
+Graph::~Graph() {
+    for (Node* node : nodes)
+        delete node;
 }
 
 void Graph::addNode(Node* node) {
@@ -44,12 +90,11 @@ void Graph::addNode(Node* node) {
 }
 
 void Graph::removeNode(Node* node) {
-    nodes.erase(node);
-    // Remove also from all neighbours list
-    for (std::set<Node*>::iterator it = nodes.begin();
-    it != nodes.end(); it++) {
-        (*it)->removeNeighbour(node);
+    for (Node* n : nodes) {
+        n->removeNeighbour(node);
     }
+    nodes.erase(node);
+    delete node;
 }
 
 void Graph::addEdge(Node* begin, Node* end) {
@@ -68,4 +113,19 @@ void Graph::removeEdge(Node* begin, Node* end) {
         return;
     begin->removeNeighbour(end);
     end->removeNeighbour(begin);
+}
+
+std::ostream& operator<<(std::ostream& os, const Graph& g) {
+    os << "Source\tTarget\n";
+
+    for (node_iterator it = g.begin(); it != g.end(); ++it) {
+        Node* node = *it;
+        for (node_iterator nb = node->nb_begin(); nb != node->nb_end(); ++nb) {
+            if (node->getName() < (*nb)->getName()) {
+                os << node->getName() << "\t" << (*nb)->getName() << "\n";
+            }
+        }
+    }
+
+    return os;
 }

@@ -1,11 +1,10 @@
-#ifndef MY_TASKS_H
-#define MY_TASKS_H
+#ifndef SEARCH_DISJOINT_GRAPHS_H
+#define SEARCH_DISJOINT_GRAPHS_H
 
 #include "graph.h"
 #include <vector>
 #include <string>
 
-std::vector<Graph*> findDisjointGraphs(const Graph& graph);
-void saveDisjointGraph(const Graph& g, const std::string& filename);
+std::vector<Graph> findDisjointGraphs(const Graph& graph);
 
 #endif

@@ -2,6 +2,7 @@
 #define GRAPH_H
 
 #include "node.h"
+#include <ostream>
 #include <set>
 #include <string>
 
@@ -10,6 +11,8 @@ class Graph {
 public:
     Graph () {};
     Graph(const char* file_name);
+    Graph(const Graph& other);
+    Graph& operator=(const Graph& other);
     ~Graph();
     void addNode(Node* node);
     void removeNode(Node* node);
@@ -17,6 +20,8 @@ public:
     void removeEdge(Node* begin, Node* end);
     node_iterator begin() const { return nodes.begin(); }
     node_iterator end() const { return nodes.end(); }
+
+    friend std::ostream& operator<<(std::ostream& os, const Graph& g);
 };
 
 #endif
