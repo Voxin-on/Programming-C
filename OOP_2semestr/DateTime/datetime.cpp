@@ -140,6 +140,28 @@ int DateTime::getDayOfWeek() const {
     return dow == 0 ? 7 : dow;
 }
 
+int DateTime::getYear() const {
+    double z = floor(data + 0.5);
+    double f = (data + 0.5) - z;
+    double a;
+
+    if (z < 2299161) {
+        a = z;
+    } else {
+        double alpha = floor((z - 1867216.25) / 36524.25);
+        a = z + 1 + alpha - floor(alpha / 4);
+    }
+
+    double b = a + 1524;
+    double c = floor((b - 122.1) / 365.25);
+    double d_ptr = floor(365.25 * c);
+    double e = floor((b - d_ptr) / 30.6001);
+
+    int month = (int)((e < 14) ? (e - 1) : (e - 13));
+    int year  = (int)((month > 2) ? (c - 4716) : (c - 4715));
+    return year;
+}
+
 DateTime DateTime::easter(int year) {
     // Алгоритм Гаусса
     int a = year % 19;

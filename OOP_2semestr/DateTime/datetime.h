@@ -34,6 +34,7 @@ public:
     bool operator<=(const DateTime& other) const;
 
     int getDayOfWeek() const;
+    int getYear() const;
     static DateTime easter(int year);
 };
 

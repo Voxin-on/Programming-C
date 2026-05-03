@@ -1,4 +1,5 @@
 #include "datetime.h"
+#include "moon.h"
 #include <iostream>
 
 using namespace std;
@@ -21,68 +22,93 @@ void quickSort(DateTime arr[], int left, int right) {
     quickSort(arr, i, right);
 }
 
-int main(){
-    try{
-        DateTime today(2026,3,30);
-        DateTime yesterday(2026,3,29);
-        DateTime today2(2026,3,30);
+void runTests() {
+    DateTime today(2026,3,30);
+    DateTime yesterday(2026,3,29);
+    DateTime today2(2026,3,30);
 
-        cout<<"Print"<<endl;
-        cout<<today;
+    cout<<"Print"<<endl;
+    cout<<today;
 
-        cout<<"Compare"<<endl;
-        cout<<(today==yesterday)<<endl;
-        cout<<(today!=yesterday)<<endl;
-        cout<<(today>yesterday)<<endl;
-        cout<<(today<yesterday)<<endl;
-        cout<<(today>=yesterday)<<endl;
-        cout<<(today<=today2)<<endl;
-        
+    cout<<"Compare"<<endl;
+    cout<<(today==yesterday)<<endl;
+    cout<<(today!=yesterday)<<endl;
+    cout<<(today>yesterday)<<endl;
+    cout<<(today<yesterday)<<endl;
+    cout<<(today>=yesterday)<<endl;
+    cout<<(today<=today2)<<endl;
 
-        cout<<"Math operation"<<endl;
-        double diff = today - yesterday;
-        cout<<diff<<endl;
+    cout<<"Math operation"<<endl;
+    double diff = today - yesterday;
+    cout<<diff<<endl;
 
-        DateTime future = today + 50;
-        cout<<future;
+    DateTime future = today + 50;
+    cout<<future;
 
+    cout<<"DayOfWeek"<<endl;
+    cout <<today.getDayOfWeek()<<endl;
 
-        cout<<"Inpunt"<<endl;
-        DateTime ourDate;
-        cin>>ourDate;
-        cout<<ourDate;
+    cout<<"Easter"<<endl;
+    DateTime e = DateTime::easter(2026);
+    cout << e;
+}
 
-        cout<<"DayOfWeek"<<endl;
-        cout <<today.getDayOfWeek()<<endl;
+void runInteractive() {
+    cout<<"Input"<<endl;
+    DateTime ourDate;
+    cin>>ourDate;
+    cout<<ourDate;
 
-        cout<<"Easter"<<endl;
-        DateTime e = DateTime::easter(2026);
-        cout << e;
+    cout << "QuickSort" << endl;
+    int n;
+    cin >> n;
+    DateTime* dates = new DateTime[n];
 
-        cout << "QuickSort" << endl;
-        int n;
-        cin >> n;
-        DateTime* dates = new DateTime[n];
-        for (int i = 0; i < n; i++) cin >> dates[i];
+    for (int i = 0; i < n; i++) cin >> dates[i];
 
-        cout << "Before:" << endl;
-        for (int i = 0; i < n; i++) cout << dates[i];
+    cout << "Before:" << endl;
+    for (int i = 0; i < n; i++) cout << dates[i];
 
-        quickSort(dates, 0, n - 1);
+    quickSort(dates, 0, n - 1);
 
-        cout << "After:" << endl;
-        for (int i = 0; i < n; i++) cout << dates[i];
+    cout << "After:" << endl;
+    for (int i = 0; i < n; i++) cout << dates[i];
 
-        delete[] dates;
+    delete[] dates;
+}
 
+void runExceptionTest() {
+    cout<<"Exception"<<endl;
+    DateTime wrongDate(2026, 3, 32);
+}
 
-        cout<<"Exception"<<endl;
-        DateTime wrongDate(2026, 3, 32);
-    }
-    catch(const DateTimeException& e)
-    {
-        cout<<"Cath Exception";
-    }
+int main() {
+    // try {
+    //     runTests();
+    //     runInteractive();
+    //     runExceptionTest();
+    // }
+    // catch(const DateTimeException& e) {
+    //     cout << "Catch Exception";
+    // }
+
+    int y, m, d;
+    char sep;
+    cin >> y >> sep >> m >> sep >> d;
+
+    DateTime target(y, m, d);
+
+    clock_t start = clock();
+
+    MoonResult result = processMoonData(target);
+
+    clock_t end = clock();
+    double time = (double)(end - start) / CLOCKS_PER_SEC;
+    cout << "Time: " << time << " sec"<<endl;
+
+    printResult(target, result);
+
+    return 0;
 
     return 0;
 }
