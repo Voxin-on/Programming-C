@@ -51,7 +51,7 @@ void testModifyAndExceptions() {
     }
 }
 
-double runJosephusTest(int N, int k, int& result) {
+double runIosif(int N, int k, int& result) {
     Array arr(N);
 
     for (int j = 0; j < N; j++) {
@@ -81,7 +81,7 @@ int main() {
 
     for (int i = 0; i < 7; i++) {
         int result;
-        double time = runJosephusTest(numbers[i], k, result);
+        double time = runIosif(numbers[i], k, result);
 
         cout << "N: " << numbers[i]
              << " Answer: " << result
