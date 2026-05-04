@@ -102,6 +102,11 @@ int main() {
 
     MoonResult result = processMoonData(target);
 
+    if (!result.ok) {
+        cout << "File not found" << endl;
+        return 1;
+    }
+
     clock_t end = clock();
     double time = (double)(end - start) / CLOCKS_PER_SEC;
     cout << "Time: " << time << " sec"<<endl;

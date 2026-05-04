@@ -122,7 +122,8 @@ MoonResult processMoonData(const DateTime& target) {
 
     ifstream file(filename);
     if (!file.is_open()) {
-        throw runtime_error("File not found");
+        result.ok = false;
+        return result;
     }
 
     bool typeUsual = detectFileType(file);

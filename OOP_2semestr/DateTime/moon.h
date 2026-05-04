@@ -3,6 +3,8 @@
 #include "datetime.h"
 
 struct MoonResult {
+    bool ok = true;
+    
     bool hasRise = false;
     bool hasCulmination = false;
     bool hasSet = false;
