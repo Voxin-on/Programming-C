@@ -4,9 +4,10 @@
 #include "point.h"
 #include "figure.h"
 #include <iostream>
+#include <cmath>
 
 template <typename T>
-class Ellipse : public IFigure {
+class Ellipse : public Figure {
     Point<T> center;
     double a, b;
 
@@ -22,10 +23,7 @@ public:
     }
 
     Ellipse(T x, T y, double a, double b)
-        : center{ x, y }, a(a), b(b) {
-        if (!is_valid())
-            throw FigureException();
-    }
+        : Ellipse(Point<T>{x, y}, a, b) {}
 
     double calc_area() override {
         return M_PI * a * b;

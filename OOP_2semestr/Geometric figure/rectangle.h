@@ -7,15 +7,11 @@
 #include <iostream>
 
 template <typename T>
-class Rectangle : public IFigure {
+class Rectangle : public Figure {
     double a, b;
 
     bool is_valid() const {
         return a > 0 && b > 0;
-    }
-
-    static double dot(Point<T> a, Point<T> b) {
-        return a.x * b.x + a.y * b.y;
     }
 
 public:

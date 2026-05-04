@@ -4,9 +4,10 @@
 #include "point.h"
 #include "figure.h"
 #include <iostream>
+#include <cmath>
 
 template <typename T>
-class Circle : public IFigure {
+class Circle : public Figure {
     Point<T> center;
     double radius;
 
@@ -20,10 +21,8 @@ public:
             throw FigureException();
     }
 
-    Circle(T x, T y, double r) : center{ x, y }, radius(r) {
-        if (!is_valid())
-            throw FigureException();
-    }
+    Circle(T x, T y, double r)
+        : Circle(Point<T>{x, y}, r) {}
 
     double calc_area() override {
         return M_PI * radius * radius;
