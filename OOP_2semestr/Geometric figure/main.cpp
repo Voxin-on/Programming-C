@@ -5,6 +5,7 @@
 #include "rectangle.h"
 #include "circle.h"
 #include "ellipse.h"
+#include "identify.h"
 #include <iostream>
 
 #include <vector>
@@ -12,40 +13,14 @@
 using namespace std;
 
 int main () {
-    Triangle<int> t(3, 4, 5);
-    t.name();
-    cout<<t.calc_area() << endl; // 6
-    cout<<t.calc_perimetr() << endl;
-
-    Rectangle<int> r(3, 4);
-    r.name();
-    cout<<r.calc_area() << endl;
-    cout<<r.calc_perimetr() << endl;
-
-    Circle<int> c({0,0}, 1);
-    c.name();
-    cout<<c.calc_area() << endl;
-    cout<<c.calc_perimetr() << endl;
-
-    Ellipse<int> e({0,0}, 1, 1);
-    e.name();
-    cout<<e.calc_area() << endl;
-    cout<<e.calc_perimetr() << endl;
-
     vector<Point<int>> pts = {{0,0}, {10,0}, {0,10}};
-    Polygon<int> p(pts);
-    p.name();
-    cout<<p.calc_area() << endl;
-    cout<<p.calc_perimetr() << endl;
-
-
-    cout<<"Test with base class"<<endl;
-    vector<Figure *> figures;
+    cout<<endl<<"Test"<<endl;
+    vector<Figure*> figures;
 
     figures.push_back(new Triangle<int>(3, 4, 5));
     figures.push_back(new Rectangle<int>(3, 4));
-    figures.push_back(new Circle<int>({0,0}, 1));
-    figures.push_back(new Ellipse<int>({0,0}, 1, 1));
+    figures.push_back(new Circle<int, int>({0,0}, 1));
+    figures.push_back(new Ellipse<int, int>({0,0}, 1, 1));
     figures.push_back(new Polygon<int>(pts));
 
     for (Figure* fig : figures){ 
@@ -54,10 +29,73 @@ int main () {
         cout << "Perimeter: " << fig->calc_perimetr() << endl << endl;
     }
 
+    // поиск фигур
+    ifstream file("Demo-task/input1.dat");
+    if (!file.is_open()) return 1;
+
+    int grid[200][200];
+    char ch;
+    for (int i = 0; i < 200; i++) {
+        for (int j = 0; j < 200; j++) {
+            file >> ch;
+            grid[i][j] = ch - '0';
+        }
+    }
+
+    int labels[200][200] = {};
+    int label = 0;
+    vector<vector<Point<int>>> components;
+
+    for (int i = 0; i < 200; i++) {
+        for (int j = 0; j < 200; j++) {
+            if (grid[i][j] == 1 && labels[i][j] == 0) {
+                findFigure(i, j, ++label, grid, labels, components);
+            }
+        }
+    }
+    int countNoise = 0;
+    vector<Figure*> figuresSearched;
+    for (vector<Point<int>>& comp : components) {
+        if (comp.size() < 10) continue;
+
+        Figure* fig = identifyFigure(comp);
+        if (fig != nullptr)
+            figuresSearched.push_back(fig);
+        else
+            countNoise++;
+    }
+
+    int countRect = 0, countCircle = 0, countTri = 0;
+    for (Figure* fig : figuresSearched) {
+        string type = fig->getType();
+
+        if (type == "Rectangle") 
+            countRect++;
+        else if (type == "Circle") 
+            countCircle++;
+        else if (type == "Triangle")
+            countTri++;
+    }
+
+    ofstream outFile("result.txt");
+    outFile << "Rectangle = " << countRect << endl;
+    outFile << "Circle = " << countCircle << endl;
+    outFile << "Triangle = " << countTri << endl;
+    outFile << "Noise = " << countNoise << endl;
+
+    // Посчитайте общую площадь занимаемую Прямоугольниками, Треугольниками и окружностями
+    double allArea = 0;
+    for (Figure* fig : figuresSearched){ 
+        allArea+= fig->calc_area();
+    }
+    cout <<"All area: "<< allArea << endl;
+
     // Посчитайте площадь участка определенного в granitsy-uchastka2.txt.
 
     Polygon<int> pol("granitsy-uchastka2.txt");
     cout << "Polygon area in file: " << pol.calc_area() << endl;
+
+    for (Figure* fig : figuresSearched) delete fig;
 
     return 0;
 }

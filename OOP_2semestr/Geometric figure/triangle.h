@@ -11,7 +11,9 @@ template <typename T>
 class Triangle : public Figure {
     double a, b, c;
     bool is_valid() const {
-        return (a + b > c) && (a + c > b) && (b + c > a);
+        return (a + b > c + EPS) &&
+               (a + c > b + EPS) &&
+               (b + c > a + EPS);
     }
 public:
     Triangle(T a, T b, T c) : a(a), b(b), c(c) {
@@ -19,7 +21,10 @@ public:
             throw FigureException();
     }
 
-    Triangle(Point<T> p1, Point<T> p2, Point<T> p3) {
+    Triangle(const Point<T> p1, const Point<T> p2, const Point<T> p3) {
+        if (std::abs(cross_product(p1, p2, p3)) < EPS)
+            throw FigureException();
+
         a = get_dist(p1, p2);
         b = get_dist(p2, p3);
         c = get_dist(p3, p1);
@@ -39,6 +44,8 @@ public:
     void name() override { 
         std::cout << "Triangle" << std::endl;
     }
+
+    std::string getType() override { return "Triangle"; }
 };
 
 #endif

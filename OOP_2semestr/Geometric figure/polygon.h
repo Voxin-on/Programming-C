@@ -7,7 +7,6 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include <cmath>
 
 template <typename T>
 class Polygon : public Figure {
@@ -65,6 +64,8 @@ public:
     void name() override {
         std::cout << "Polygon with " << vertices.size() << " vertices\n";
     }
+
+    std::string getType() override { return "Polygon"; }
 };
 
 #endif

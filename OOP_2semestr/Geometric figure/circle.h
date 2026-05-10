@@ -6,9 +6,9 @@
 #include <iostream>
 #include <cmath>
 
-template <typename T>
+template<typename CoordType, typename SizeType>
 class Circle : public Figure {
-    Point<T> center;
+    Point<CoordType> center;
     double radius;
 
     bool is_valid() const {
@@ -16,25 +16,27 @@ class Circle : public Figure {
     }
 
 public:
-    Circle(const Point<T>& c, double r) : center(c), radius(r) {
+    Circle(const Point<CoordType>& c, SizeType r) : center(c), radius(r) {
         if (!is_valid())
             throw FigureException();
     }
 
-    Circle(T x, T y, double r)
-        : Circle(Point<T>{x, y}, r) {}
+    Circle(CoordType x, CoordType y, SizeType r)
+        : Circle(Point<CoordType>{x, y}, r) {}
 
     double calc_area() override {
-        return M_PI * radius * radius;
+        return PI * radius * radius;
     }
 
     double calc_perimetr() override {
-        return 2 * M_PI * radius;
+        return 2 * PI * radius;
     }
 
     void name() override { 
         std::cout << "Circle" << std::endl; 
     }
+
+    std::string getType() override { return "Circle"; }
 };
 
 #endif

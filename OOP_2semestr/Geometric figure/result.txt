@@ -1,0 +1,4 @@
+Rectangle = 3
+Circle = 4
+Triangle = 2
+Noise = 7
