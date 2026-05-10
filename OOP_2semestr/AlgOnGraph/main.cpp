@@ -1,48 +1,53 @@
 #include "graph.h"
 #include "algorithms.h"
 #include "searchDisjointGraphs.h"
+#include "Dijkstra.h"
 #include <iostream>
 #include <fstream>
+
 using namespace std;
- 
-void printGraph(const Graph& g) {
-    for (node_iterator it = g.begin(); it != g.end(); it++) {
-        Node* node = *it;
-        cout << node->getName() << " -> ";
-        for (node_iterator nb = node->nb_begin(); nb != node->nb_end(); nb++)
-            cout << (*nb)->getName() << " ";
+
+bool testBFS(Graph& g, const string node1, const string node2){
+    BFS test(g);
+
+    return test.connected(g.findNodeByName(node1), g.findNodeByName(node2));
+}
+
+bool testDFS (Graph& g, const string node1, const string node2){
+    DFS test(g);
+
+    return test.connected(g.findNodeByName(node1), g.findNodeByName(node2));
+}
+
+void testDijkstra(Graph& g, const string& startName, const string& endName) {
+    Node* start = g.findNodeByName(startName);
+    Node* finish = g.findNodeByName(endName);
+
+    if (!start || !finish) {
+        cout << "Nodes not found!" << endl;
+        return;
+    }
+
+    Dijkstra solver(g);
+    Way path = solver.shortestWay(start, finish);
+
+    if (path.length == -1) {
+        cout << "No path exists between " << startName << " and " << endName << endl;
+    } else {
+        cout << "Shortest distance from " << startName << " to " << endName << " is: " << path.length << endl;
+        cout << "Route: ";
+        
+        int pathSize = path.nodes.size();
+        for (int i = pathSize - 1; i >= 0; i--) {
+            cout << path.nodes[i]->getName();
+            if (i > 0) {
+                cout << " -> ";
+            }
+        }
         cout << endl;
     }
 }
 
-bool testBFS(const Graph& g, const string node1, const string node2){
-    BFS test(g);
-
-    Node* nodeA = nullptr; // делаем 2 пустых указателя
-    Node* nodeB = nullptr;
-
-    for (node_iterator it = g.begin(); it != g.end(); ++it) {
-        if ((*it)->getName() == node1)  nodeA = *it;
-        if ((*it)->getName() == node2) nodeB = *it;
-    } // присваиваем указатели на вершины в одном и том же графе
-
-    return test.connected(nodeA,nodeB);
-}
-
-bool testDFS (const Graph& g, const string node1, const string node2){
-    DFS test(g);
-
-    Node* nodeA = nullptr;
-    Node* nodeB = nullptr;
-
-    for (node_iterator it = g.begin(); it != g.end(); ++it) {
-        if ((*it)->getName() == node1)  nodeA = *it;
-        if ((*it)->getName() == node2) nodeB = *it;
-    }
-
-    return test.connected(nodeA,nodeB);
-}
- 
 int main() {
     // test create graph
     Node* a = new Node("A");
@@ -64,7 +69,7 @@ int main() {
     g.addEdge(c, d);
     g.addEdge(d, e);
  
-    printGraph(g);
+    cout<< g;
 
     cout<<"testDFS"<<endl;
 
@@ -101,7 +106,7 @@ int main() {
     vector<Graph> graphs3 = findDisjointGraphs(g3);
 
     for (int i = 0; i < graphs3.size(); i++) {
-        ofstream file("4.task_" + to_string(i) + ".txt");
+        ofstream file("results/4.task_" + to_string(i) + ".txt");
         file << graphs3[i];
     }
 
@@ -109,9 +114,63 @@ int main() {
     vector<Graph> graphs4 = findDisjointGraphs(g4);
 
     for (int i = 0; i < graphs4.size(); i++) {
-        ofstream file("5.task_" + to_string(i) + ".txt");
+        ofstream file("results/5.task_" + to_string(i) + ".txt");
         file << graphs4[i];
     }
- 
+
+    // (Задание Дейкстры)
+    
+    Graph g_dijk;
+
+    Node* n1 = new Node("1");
+    Node* n2 = new Node("2");
+    Node* n3 = new Node("3");
+    Node* n4 = new Node("4");
+    Node* n5 = new Node("5");
+    Node* n6 = new Node("6");
+    Node* n7 = new Node("7");
+    Node* n8 = new Node("8");
+    Node* n9 = new Node("9");
+
+    g_dijk.addNode(n1); g_dijk.addNode(n2); g_dijk.addNode(n3);
+    g_dijk.addNode(n4); g_dijk.addNode(n5); g_dijk.addNode(n6);
+    g_dijk.addNode(n7); g_dijk.addNode(n8); g_dijk.addNode(n9);
+
+    g_dijk.addDirectedEdge(n1, n2, 10);
+    g_dijk.addDirectedEdge(n1, n4, 8);
+    g_dijk.addDirectedEdge(n1, n3, 6);
+
+    g_dijk.addDirectedEdge(n2, n7, 11);
+    g_dijk.addDirectedEdge(n2, n4, 5);
+    g_dijk.addDirectedEdge(n2, n5, 13);
+
+    g_dijk.addDirectedEdge(n3, n5, 3);
+
+    g_dijk.addDirectedEdge(n4, n3, 2);
+    g_dijk.addDirectedEdge(n4, n7, 12);
+    g_dijk.addDirectedEdge(n4, n5, 5);
+    g_dijk.addDirectedEdge(n4, n6, 7);
+
+    g_dijk.addDirectedEdge(n5, n6, 9);
+    g_dijk.addDirectedEdge(n5, n9, 12);
+
+    g_dijk.addDirectedEdge(n7, n6, 4);
+    g_dijk.addDirectedEdge(n7, n8, 6);
+    g_dijk.addDirectedEdge(n7, n9, 16);
+
+    g_dijk.addDirectedEdge(n6, n8, 8);
+    g_dijk.addDirectedEdge(n6, n9, 10);
+
+    g_dijk.addDirectedEdge(n8, n9, 15);
+
+    // тест дейкстры
+
+    // testDijkstra(g_dijk, "2", "5"); //must be 10
+    // testDijkstra(g_dijk, "5", "2"); // rout doesn't exist
+
+
+    // Найдите оптимальный путь из 1-ой вершины в 9-ю.
+    testDijkstra(g_dijk, "1", "9");
+
     return 0;
 }

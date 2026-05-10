@@ -16,11 +16,14 @@ public:
     ~Graph();
     void addNode(Node* node);
     void removeNode(Node* node);
-    void addEdge(Node* begin, Node* end);
+    void addDirectedEdge(Node* begin, Node* end, int weight = 1);
+    void addEdge(Node* begin, Node* end, int weight = 1);
+    void removeDirectedEdge(Node* begin, Node* end);
     void removeEdge(Node* begin, Node* end);
     node_iterator begin() const { return nodes.begin(); }
     node_iterator end() const { return nodes.end(); }
 
+    Node* findNodeByName(const std::string& name);
     friend std::ostream& operator<<(std::ostream& os, const Graph& g);
 };
 

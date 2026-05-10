@@ -1,22 +1,15 @@
 #include "searchDisjointGraphs.h"
 #include "algorithms.h"
-#include <iostream>
-#include <fstream>
 #include <map>
 
 using namespace std;
-
-// vector<Graph*> graphs; 1 функция можно получить в динам массив
-// for (перебор){
-//     file<<graph; 2 функция вывод в файл
-// }
 
 vector<Graph> findDisjointGraphs(const Graph& graph) {
     set<Node*> unvisited;
 
     // собираем все вершины
-    for (auto it = graph.begin(); it != graph.end(); ++it)
-        unvisited.insert(*it);
+    for (Node* node : graph)
+        unvisited.insert(node);
 
     vector<Graph> components;
 
@@ -46,7 +39,7 @@ vector<Graph> findDisjointGraphs(const Graph& graph) {
 
         // восстанавливаем для них рёбра
         for (Node* oldNode : componentNodes) {
-            for (auto it = oldNode->nb_begin(); it != oldNode->nb_end(); ++it) {
+            for (node_iterator it = oldNode->nb_begin(); it != oldNode->nb_end(); it++) {
                 if (componentNodes.count(*it)) {
                     component.addEdge(nodeMap[oldNode], nodeMap[*it]);
                 }

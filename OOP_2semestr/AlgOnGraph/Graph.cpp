@@ -1,29 +1,22 @@
-#include "graph.h"
+#include "Graph.h"
 #include <fstream>
 #include <map>
 
 Graph::Graph(const char* file_name){
     std::ifstream file(file_name);
     file.ignore(1000, '\n');
-    int source,target;
+    std::string source,target;
 
     while(file>>source>>target){
-        Node* srcNode = nullptr;
-        Node* tgtNode = nullptr;
-
-        for (node_iterator it = nodes.begin(); it != nodes.end(); ++it) {
-            if ((*it)->getName() == std::to_string(source)) 
-                srcNode = *it;
-            if ((*it)->getName() == std::to_string(target)) 
-                tgtNode = *it;
-        }
+        Node* srcNode = findNodeByName(source);
+        Node* tgtNode = findNodeByName(target);
 
         if (!srcNode) { 
-            srcNode = new Node(std::to_string(source)); 
+            srcNode = new Node(source); 
             addNode(srcNode); 
         }
         if (!tgtNode) { 
-            tgtNode = new Node(std::to_string(target)); 
+            tgtNode = new Node(target); 
             addNode(tgtNode); 
         }
 
@@ -36,18 +29,20 @@ Graph::Graph(const char* file_name){
 Graph::Graph(const Graph& other) {
     std::map<Node*, Node*> nodeMap;
 
-    // копируем вершины
+    // создаём новые вершины
     for (Node* node : other.nodes) {
         Node* newNode = new Node(node->getName());
         nodes.insert(newNode);
         nodeMap[node] = newNode;
     }
 
-    // копируем рёбра
+    // копируем связи и веса
     for (Node* node : other.nodes) {
-        for (auto it = node->nb_begin(); it != node->nb_end(); ++it) {
+        for (node_iterator it = node->nb_begin(); it != node->nb_end(); it++) {
+            Node* neighbor = *it;
             if (nodeMap.count(*it)) {
-                nodeMap[node]->addNeighbour(nodeMap[*it]);
+                int w = node->getWeight(neighbor); 
+                nodeMap[node]->addNeighbour(nodeMap[neighbor], w);
             }
         }
     }
@@ -56,13 +51,13 @@ Graph::Graph(const Graph& other) {
 Graph& Graph::operator=(const Graph& other) {
     if (this == &other) return *this;
 
-    // очистка
-    for (Node* node : nodes)
+    // сначала удаляем старое
+    for (Node* node : nodes) 
         delete node;
     nodes.clear();
 
-    std::map<Node*, Node*> nodeMap;
 
+    std::map<Node*, Node*> nodeMap;
     for (Node* node : other.nodes) {
         Node* newNode = new Node(node->getName());
         nodes.insert(newNode);
@@ -70,9 +65,11 @@ Graph& Graph::operator=(const Graph& other) {
     }
 
     for (Node* node : other.nodes) {
-        for (auto it = node->nb_begin(); it != node->nb_end(); ++it) {
+        for (node_iterator it = node->nb_begin(); it != node->nb_end(); it++) {
+            Node* neighbor = *it;
             if (nodeMap.count(*it)) {
-                nodeMap[node]->addNeighbour(nodeMap[*it]);
+                int w = node->getWeight(neighbor); 
+                nodeMap[node]->addNeighbour(nodeMap[neighbor], w);
             }
         }
     }
@@ -90,40 +87,57 @@ void Graph::addNode(Node* node) {
 }
 
 void Graph::removeNode(Node* node) {
-    for (Node* n : nodes) {
-        n->removeNeighbour(node);
+    for (node_iterator it = nodes.begin();
+    it != nodes.end(); it++) {
+        (*it)->removeNeighbour(node);
     }
+
     nodes.erase(node);
     delete node;
 }
 
-void Graph::addEdge(Node* begin, Node* end) {
-    if (nodes.find(begin) == nodes.end())
+void Graph::addDirectedEdge(Node* begin, Node* end, int weight) {
+    if (nodes.find(begin) == nodes.end() || nodes.find(end) == nodes.end())
         return;
-    if (nodes.find(end) == nodes.end())
+
+    begin->addNeighbour(end, weight);
+}
+
+void Graph::addEdge(Node* begin, Node* end, int weight) {
+    addDirectedEdge(begin, end, weight);
+    addDirectedEdge(end, begin, weight);
+}
+
+void Graph::removeDirectedEdge(Node* begin, Node* end) {
+    if (nodes.find(begin) == nodes.end() || nodes.find(end) == nodes.end()) {
         return;
-    begin->addNeighbour(end);
-    end->addNeighbour(begin);
+    }
+    begin->removeNeighbour(end);
 }
 
 void Graph::removeEdge(Node* begin, Node* end) {
-    if (nodes.find(begin) == nodes.end()) 
-        return;
-    if (nodes.find(end) == nodes.end()) 
-        return;
-    begin->removeNeighbour(end);
-    end->removeNeighbour(begin);
+    removeDirectedEdge(begin, end);
+    removeDirectedEdge(end, begin);
+}
+
+Node* Graph::findNodeByName(const std::string& name) {
+    for (node_iterator it = nodes.begin(); it != nodes.end(); it++) {
+        if ((*it)->getName() == name) {
+            return *it;
+        }
+    }
+    return nullptr;
 }
 
 std::ostream& operator<<(std::ostream& os, const Graph& g) {
     os << "Source\tTarget\n";
 
-    for (node_iterator it = g.begin(); it != g.end(); ++it) {
+    for (node_iterator it = g.begin(); it != g.end(); it++) {
         Node* node = *it;
-        for (node_iterator nb = node->nb_begin(); nb != node->nb_end(); ++nb) {
-            if (node->getName() < (*nb)->getName()) {
-                os << node->getName() << "\t" << (*nb)->getName() << "\n";
-            }
+        
+        for (node_iterator nb = node->nb_begin(); nb != node->nb_end(); nb++) {
+            os << node->getName() << "\t" 
+               << (*nb)->getName() << "\n";
         }
     }
 
