@@ -1,0 +1,17 @@
+=== Chess rule checks ===
+Edit UI/main.cpp -> runRuleChecks(), rebuild, mode 3.
+
+OK   - e2-e4 legal from start
+OK   - pawn cannot jump three squares
+OK   - castling blocked at start (pieces in way)
+OK   - position file loads (sample.txt)
+OK   - missing position file fails
+OK   - en passant capture legal
+OK   - white kingside castling legal (e1-g1)
+OK   - castling illegal through attacked f1
+OK   - white queenside castling legal (e1-c1)
+OK   - stalemate detected
+OK   - check detected
+
+Result: 11 / 11 passed
+Full log saved to out.txt
