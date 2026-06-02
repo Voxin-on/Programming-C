@@ -1,0 +1,20 @@
+White: 9
+KA2
+RD1
+RB3
+pE2
+NA4
+NF4
+pC5
+BA6
+pE6
+Black: 9
+KC4
+pA3
+pB4
+NB5
+pC6
+pD6
+pD5
+pE7
+pE3

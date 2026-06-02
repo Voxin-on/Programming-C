@@ -84,6 +84,9 @@ public:
     // безопасен ли путь короля при рокировке
     bool isCastlingPathSafe(int row, int fromCol, int toCol, Color kingColor) const;
 
+    // проверка доски для файла
+    bool isPositionValid() const;
+
 private:
     Piece* squares_[8][8];
     Color activeColor_;

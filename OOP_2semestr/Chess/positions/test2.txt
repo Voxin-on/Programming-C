@@ -1,0 +1,24 @@
+White: 13
+KD8
+QF1
+RD7
+RF6
+BB7
+BC5
+ND4
+NH5
+pD2
+pC4
+pF4
+pC6
+pG7
+Black: 9
+KE4
+QH6
+RB4
+RD3
+BG1
+BH1
+NF5
+pC3
+pH7

@@ -1,0 +1,10 @@
+White: 5
+KC8
+BC5
+NC4
+BD3
+NF2
+Black: 3
+pC3
+pA2
+KA1

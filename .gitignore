@@ -68,3 +68,15 @@ desktop.ini
 *.gch
 *.pch
 "/git/" 
+
+# SFML библиотека
+SFML-3.1.0/
+SFML-*/
+SFML_*/
+
+# Библиотеки и DLL
+*.dll
+*.lib
+*.so
+*.a
+*.dylib

@@ -237,7 +237,7 @@ int runConsole() {
         return runRuleChecks();
     }
 
-    const char* positionFile = "positions/sample.txt";
+    const char* positionFile = "positions/test3.txt";
     const int aiDepth = 4;
     const int maxPlies = 80;
 

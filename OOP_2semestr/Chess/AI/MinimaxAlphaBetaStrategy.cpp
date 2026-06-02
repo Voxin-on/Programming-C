@@ -49,17 +49,18 @@ int MinimaxAlphaBetaStrategy::evaluateBoard(const Board& board, Color aiColor) c
 
 // Рекурсивный минимакс с альфа-бета отсечением.
 int MinimaxAlphaBetaStrategy::minimax(Board& board, int depth, int alpha, int beta,
-                                      bool maximizing, Color aiColor) const {
-    const Color side = maximizing ? aiColor : oppositeColor(aiColor);
+                                      Color aiColor) const {
+    const Color side = board.getActiveColor();
+    const bool maximizing = (side == aiColor);
     const std::vector<Move> moves = board.generateLegalMoves(side);
 
     if (moves.empty()) {
-        // Мат или пат: большой штраф/бонус в зависимости от стороны.
         if (board.isKingInCheck(side)) {
-            return maximizing ? -100000 : 100000;
+            return (side == aiColor) ? -100000 : 100000;
         }
         return 0;
     }
+
     if (depth == 0) {
         return evaluateBoard(board, aiColor);
     }
@@ -68,7 +69,7 @@ int MinimaxAlphaBetaStrategy::minimax(Board& board, int depth, int alpha, int be
         int maxEval = INT_MIN;
         for (const Move& move : moves) {
             const MoveUndo undo = board.makeMove(move);
-            const int eval = minimax(board, depth - 1, alpha, beta, false, aiColor);
+            const int eval = minimax(board, depth - 1, alpha, beta, aiColor);
             board.unmakeMove(undo);
             if (eval > maxEval) {
                 maxEval = eval;
@@ -76,7 +77,6 @@ int MinimaxAlphaBetaStrategy::minimax(Board& board, int depth, int alpha, int be
             if (eval > alpha) {
                 alpha = eval;
             }
-            // Альфа-бета отсечение.
             if (beta <= alpha) {
                 break;
             }
@@ -87,7 +87,7 @@ int MinimaxAlphaBetaStrategy::minimax(Board& board, int depth, int alpha, int be
     int minEval = INT_MAX;
     for (const Move& move : moves) {
         const MoveUndo undo = board.makeMove(move);
-        const int eval = minimax(board, depth - 1, alpha, beta, true, aiColor);
+        const int eval = minimax(board, depth - 1, alpha, beta, aiColor);
         board.unmakeMove(undo);
         if (eval < minEval) {
             minEval = eval;
@@ -95,7 +95,6 @@ int MinimaxAlphaBetaStrategy::minimax(Board& board, int depth, int alpha, int be
         if (eval < beta) {
             beta = eval;
         }
-        // Альфа-бета отсечение.
         if (beta <= alpha) {
             break;
         }
@@ -110,20 +109,27 @@ bool MinimaxAlphaBetaStrategy::chooseMove(Board& board, Color aiColor, Move& out
         return false;
     }
 
-    // Поиск на копии — реальная доска партии не меняется до playTurn().
+    for (const Move& move : moves) {
+        Board testBoard(board);
+        testBoard.makeMove(move);
+        const Color next = testBoard.getActiveColor();
+        if (testBoard.generateLegalMoves(next).empty() && testBoard.isKingInCheck(next)) {
+            outMove = move;
+            return true;
+        }
+    }
+
     Board searchBoard(board);
 
     int bestScore = INT_MIN;
     Move bestMove = moves[0];
     bool found = false;
 
-    // Минимальная глубина — один полуход.
     const int depth = searchDepth_ > 0 ? searchDepth_ : 1;
 
     for (const Move& move : moves) {
         const MoveUndo undo = searchBoard.makeMove(move);
-        const int score =
-            minimax(searchBoard, depth - 1, INT_MIN, INT_MAX, false, aiColor);
+        const int score = minimax(searchBoard, depth - 1, INT_MIN, INT_MAX, aiColor);
         searchBoard.unmakeMove(undo);
 
         if (!found || score > bestScore) {

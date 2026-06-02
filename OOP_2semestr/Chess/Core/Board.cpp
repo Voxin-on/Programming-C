@@ -183,6 +183,11 @@ bool Board::loadFromTextFile(const std::string& filePath) {
         return false;
     }
 
+    if (!isPositionValid()) {
+        clear();  // очищаем доску
+        return false;
+    }
+
     return true;
 }
 
@@ -818,4 +823,66 @@ std::string Board::toAscii() const {
     }
     out << "    a   b   c   d   e   f   g   h\n";
     return out.str();
+}
+
+// проверка доски для файла
+bool Board::isPositionValid() const {
+    int whiteKings = 0;
+    int blackKings = 0;
+    int whitePawns = 0;
+    int blackPawns = 0;
+    int whiteKingRow = -1;
+    int whiteKingCol = -1;
+    int blackKingRow = -1;
+    int blackKingCol = -1;
+
+    for (int r = 0; r < 8; ++r) {
+        for (int c = 0; c < 8; ++c) {
+            const Piece* piece = squares_[r][c];
+            if (piece == nullptr) {
+                continue;
+            }
+
+            if (piece->getType() == PieceType::Pawn && (r == 0 || r == 7)) {
+                return false;
+            }
+
+            if (piece->getColor() == Color::White) {
+                if (piece->getType() == PieceType::King) {
+                    ++whiteKings;
+                    whiteKingRow = r;
+                    whiteKingCol = c;
+                } else if (piece->getType() == PieceType::Pawn) {
+                    ++whitePawns;
+                }
+            } else {
+                if (piece->getType() == PieceType::King) {
+                    ++blackKings;
+                    blackKingRow = r;
+                    blackKingCol = c;
+                } else if (piece->getType() == PieceType::Pawn) {
+                    ++blackPawns;
+                }
+            }
+        }
+    }
+
+    if (whiteKings != 1 || blackKings != 1) {
+        return false;
+    }
+    if (whitePawns > 8 || blackPawns > 8) {
+        return false;
+    }
+
+    const int dr = std::abs(whiteKingRow - blackKingRow);
+    const int dc = std::abs(whiteKingCol - blackKingCol);
+    if (dr <= 1 && dc <= 1) {
+        return false; // короли не могут стоять рядом
+    }
+
+    if (isKingInCheck(oppositeColor(activeColor_))) {
+        return false; // у стороны, не имеющей хода, король не под шахом
+    }
+
+    return true;
 }

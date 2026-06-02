@@ -22,8 +22,7 @@ private:
     // Материальная оценка позиции с точки зрения aiColor.
     int evaluateBoard(const Board& board, Color aiColor) const;
     // Рекурсивный минимакс с альфа-бета отсечением.
-    int minimax(Board& board, int depth, int alpha, int beta, bool maximizing,
-                Color aiColor) const;
+    int minimax(Board& board, int depth, int alpha, int beta, Color aiColor) const;
 };
 
 #endif
